@@ -3,8 +3,10 @@ package cloudist.cc.library
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.widget.AdapterView
 import android.widget.GridView
 import android.widget.RelativeLayout
+import android.widget.TextView
 import cloudist.cc.library.adapter.KeyboardAdapter
 import kotlin.properties.Delegates
 
@@ -16,7 +18,8 @@ class NumKeyboard : RelativeLayout {
     var mContext by Delegates.notNull<Context>()
 
     private var gvKeyboard by Delegates.notNull<GridView>()
-    private var onClickKeyboardListener: OnClickKeyboardListener? = null
+    private var mTextView: TextView? = null
+
     val mAdapter by lazy { KeyboardAdapter(mContext) }
 
     constructor(context: Context?) : super(context) {
@@ -31,15 +34,13 @@ class NumKeyboard : RelativeLayout {
         mContext = context!!
     }
 
-    /**
-     * 初始化键盘的点击事件
-     */
-    private fun initEvent() {
-//        gvKeyboard.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-//            if (onClickKeyboardListener != null && position >= 0) {
-//                onClickKeyboardListener.onKeyClick(position, key[position])
-//            }
-//        }
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        initKeyboardView()
+    }
+
+    fun bindTextView(textView: TextView) {
+        mTextView = textView
     }
 
     /**
@@ -50,27 +51,20 @@ class NumKeyboard : RelativeLayout {
         gvKeyboard = view.findViewById<View>(R.id.gv_keyboard) as GridView
         mAdapter.mSelectedData = convertKeyBoardItem()
         gvKeyboard.adapter = mAdapter
-        initEvent()
-    }
 
-    interface OnClickKeyboardListener {
-        fun onKeyClick(position: Int, value: String)
-    }
-
-    /**
-     * 对外开放的方法
-
-     * @param onClickKeyboardListener
-     */
-    fun setOnClickKeyboardListener(onClickKeyboardListener: OnClickKeyboardListener) {
-        this.onClickKeyboardListener = onClickKeyboardListener
-    }
-
-    /**
-     * 设置键盘所显示的内容
-     */
-    fun init() {
-        initKeyboardView()
+        gvKeyboard.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            when (mAdapter.mSelectedData[position].itemType) {
+                KeyboardAdapter.TYPE_NUM -> mTextView?.apply {
+                    append(mAdapter.mSelectedData[position].value.toString())
+                }
+                KeyboardAdapter.TYPE_DELETE -> mTextView?.apply {
+                    if (text.isEmpty()) {
+                        return@OnItemClickListener
+                    }
+                    text = text.subSequence(0, text.lastIndex)
+                }
+            }
+        }
     }
 
     fun convertKeyBoardItem(): MutableList<KeyBoardItem> {
