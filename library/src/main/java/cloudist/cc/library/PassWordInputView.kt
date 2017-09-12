@@ -7,8 +7,9 @@ import android.graphics.RectF
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.widget.EditText
-import android.widget.TextView
 import kotlin.properties.Delegates
+import android.text.InputFilter
+import android.text.InputType
 
 
 /**
@@ -21,7 +22,7 @@ class PasswordInputView(context: Context, attrs: AttributeSet) : EditText(contex
     private var borderWidth by Delegates.notNull<Float>()
     private var borderRadius by Delegates.notNull<Float>()
 
-    private var passwordLength = 6
+    private var passwordLength by Delegates.notNull<Int>()
     private var passwordColor by Delegates.notNull<Int>()
     private var passwordWidth by Delegates.notNull<Float>()
 
@@ -45,6 +46,7 @@ class PasswordInputView(context: Context, attrs: AttributeSet) : EditText(contex
 
         passwordColor = a.getColor(R.styleable.PasswordInputView_passwordColor, ContextCompat.getColor(context, R.color.textDark))
         passwordWidth = a.getDimension(R.styleable.PasswordInputView_passwordWidth, 6f)
+        passwordLength = a.getInteger(R.styleable.PasswordInputView_passwordLength, 6)
 
         itemPadding = a.getDimension(R.styleable.PasswordInputView_itemPadding, 8f)
         itemHeight = a.getDimension(R.styleable.PasswordInputView_itemHeight, 36f)
@@ -56,7 +58,9 @@ class PasswordInputView(context: Context, attrs: AttributeSet) : EditText(contex
 
         isFocusable = normalInput
         isCursorVisible = false
-
+        filters = arrayOf<InputFilter>(InputFilter.LengthFilter(passwordLength))
+        setSingleLine(true)
+        inputType = InputType.TYPE_CLASS_NUMBER
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -92,7 +96,7 @@ class PasswordInputView(context: Context, attrs: AttributeSet) : EditText(contex
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(itemHeight.toInt() * 6 + itemPadding.toInt() * 7
+        setMeasuredDimension(itemHeight.toInt() * passwordLength + itemPadding.toInt() * (passwordLength + 1)
                 , (itemHeight + 2 * itemPadding).toInt())
     }
 

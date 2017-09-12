@@ -6,6 +6,7 @@
     <attr name="borderRadius" format="dimension" />
     <attr name="passwordColor" format="color" />
     <attr name="passwordWidth" format="dimension" />
+    <attr name="passwordLength" format="integer" />
     <attr name="itemPadding" format="dimension" />
     <attr name="itemHeight" format="dimension" />
     <attr name="normalInput" format="boolean" />
@@ -17,6 +18,7 @@
         <attr name="borderRadius" />
         <attr name="passwordColor" />
         <attr name="passwordWidth" />
+        <attr name="passwordLength" />
         <attr name="itemPadding" />
         <attr name="itemHeight" />
         <attr name="normalInput" />
